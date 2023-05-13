@@ -11,7 +11,8 @@ class NameSimilarityMatcher private constructor(
     private val levenshteinDistance = LevenshteinDistance.getDefaultInstance()
 
     fun matches(name: String, namesToMatch: Collection<String>): Boolean {
-        return namesToMatch.map { matches(name, it) }.any { it }
+        val cleanName = getCleanName(name)
+        return namesToMatch.map { matches(cleanName, it) }.any { it }
     }
 
     fun matches(name: String, nameToMatch: String): Boolean {
@@ -25,6 +26,11 @@ class NameSimilarityMatcher private constructor(
             }
             return distance <= distanceThreshold
         }
+    }
+
+    fun getCleanName(name: String): String {
+        val cleanName = name.replace(" Edition", "Edition").split(" ").filter { it != "Omnibus" && !it.endsWith("Edition") }.joinToString(" ")
+        return cleanName
     }
 
     companion object {
